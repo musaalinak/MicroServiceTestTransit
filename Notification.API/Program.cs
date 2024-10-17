@@ -1,5 +1,5 @@
 using MassTransit;
-using Produýcer.API.Consumer;
+using Notification.API.Consumers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,17 +10,16 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-//servis register
-builder.Services.AddMassTransit(opt=>
+
+builder.Services.AddMassTransit(opt =>
 {
     opt.AddConsumer<MessageSubmittedConsumer>();
     opt.UsingRabbitMq((context, config) =>
     {
+
         config.Host(builder.Configuration.GetConnectionString("RabbitConn"));
-
-
         //event dinleme olduðundan queue ile iþimiz yok, event birdan fazla yerden dinlenebilir. EventListener tanýmý yeterli
-        config.ReceiveEndpoint(x=>x.ConfigureConsumer<MessageSubmittedConsumer>(context));
+        config.ReceiveEndpoint(x => x.ConfigureConsumer<MessageSubmittedConsumer>(context));
 
     });
 });
